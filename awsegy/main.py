@@ -9,10 +9,9 @@ import progressbar
 ec2_client = boto3.client('ec2', region_name = 'ap-northeast-2')
 
 ### Component Option 
-def Search(Search):
-    origin_idx = Search.replace(':',' ') 
-    trans_idx = origin_idx.split()
-    custom_filter = [{'Name':'tag:{}'.format(trans_idx[0]), 'Values': ['{}'.format(trans_idx[1])]}]
+def Search(Search): 
+    split_idx = Search.split(':')
+    custom_filter = [{'Name':'tag:{}'.format(split_idx[0]), 'Values': ['{}'.format(split_idx[1])]}]
     response = ec2_client.describe_instances(Filters=custom_filter)
     return response['Reservations']
 
@@ -66,20 +65,28 @@ def change(change):
             print(f'Instance Running : {ids}')
 
 
-@click.command(help='Tagging Instance')
-@click.argument('tagging')
-def tagging(tagging):
-    print(tagging)
-    
+@click.command(help='Tagging All Instance')
+@click.argument('tag')
+def tag(tag):
+    split_idx = tag.split(':')
+    response = ec2_client.describe_instances()
+    instances = response['Reservations']
+    instance_ids = []
+    for instance in instances:
+        instance_ids.append(instance['Instances'][0]['InstanceId'])
+        tage_creation = ec2_client.create_tags(
+        Resources = instance_ids, 
+        Tags = [{'Key' : f'{split_idx[0]}', 'Value' : f'{split_idx[1]}',}])
+        print(f'Finished Instance Count : {len(instance_ids)}')
 
-
+  
 
 
 
 def main():
     cli.add_command(list)
     cli.add_command(change)
-    cli.add_command(tagging)
+    cli.add_command(tag)
     cli()
 
 if __name__ == "__main__":
