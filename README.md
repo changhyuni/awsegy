@@ -1,7 +1,8 @@
-awscli==1.18.214
-boto==2.49.0
-boto3==1.16.9
-botocore==1.19.54
-Click==7.0
-virtualenv==20.1.0
-progressbar==2.5
+# awsegy
+
+`awsegy` is interactive CLI tool.
+From awsegy to aws infra to files to snapshots, everything is always at your fingertips
+
+## Overview
+`awsegy` is interactive CLI tool that is related AWS and Python boto3
+It can select a ec2 server tags installed.
