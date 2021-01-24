@@ -17,6 +17,7 @@ setup(
     author_email='bhs9610@naver.com',
     description='Greet someone',
     packages=find_packages(),
+    url = "https://github.com/changhyuni/awsegy",
     entry_points={
         "console_scripts": [
             "awsegy=awsegy.main:main"

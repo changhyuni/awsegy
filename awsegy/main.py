@@ -31,7 +31,7 @@ def cli():
     pass
 
 
-@click.command(help='Check your instance information!')
+@click.command(help='Check your instance information!      ex)"awsegy list tag:Name"')
 @click.argument('list')
 def list(list):
     try:
@@ -44,7 +44,7 @@ def list(list):
         print('Oops! There''s no such name.')
 
 
-@click.command(help='Please enter the instance type to change. (Stop Waiting Time=20sec')
+@click.command(help='The instance type to change. ex) "awsegy change tag:Name Instance Type")')
 @click.argument('change', nargs=2)
 def change(change):
     for instance in Search(change[0]):
@@ -65,21 +65,48 @@ def change(change):
             print(f'Instance Running : {ids}')
 
 
-@click.command(help='Tagging All Instance')
-@click.argument('tag')
+@click.command(help='Tagging Instance!        ex)"awsegy tag all tag:Name"')
+@click.argument('tag' , nargs=2)
 def tag(tag):
-    split_idx = tag.split(':')
-    response = ec2_client.describe_instances()
-    instances = response['Reservations']
-    instance_ids = []
-    for instance in instances:
-        instance_ids.append(instance['Instances'][0]['InstanceId'])
-        tage_creation = ec2_client.create_tags(
-        Resources = instance_ids, 
-        Tags = [{'Key' : f'{split_idx[0]}', 'Value' : f'{split_idx[1]}',}])
-        print(f'Finished Instance Count : {len(instance_ids)}')
-
-  
+    if tag[0] == 'all':
+        split_idx = tag[1].split(':')
+        response = ec2_client.describe_instances()
+        instances = response['Reservations']
+        instance_ids = []
+        for instance in instances:
+            instance_ids.append(instance['Instances'][0]['InstanceId'])
+            tage_creation = ec2_client.create_tags(
+            Resources = instance_ids, 
+            Tags = [{'Key' : f'{split_idx[0]}', 'Value' : f'{split_idx[1]}',}])
+            print(f'Finished Instance Count : {len(instance_ids)}')
+    # else:
+    #     split_idx = tag[1].split(':')
+    #     response = ec2_client.describe_instances()
+    #     instances = response['Reservations']
+    #     instance_ids = []
+    #     for instance in instances:
+    #         instance_ids.append(instance['Instances'][0]['InstanceId'])
+    #         tage_creation = ec2_client.create_tags(
+    #         Resources = instance_ids, 
+    #         Tags = [{'Key' : f'{split_idx[0]}', 'Value' : f'{split_idx[1]}',}])
+    #         print(f'Finished Instance Count : {len(instance_ids)}')
+        
+        
+        
+@click.command(help='Untagging Instance!        ex)"awsegy dtag all tag:Name"')
+@click.argument('dtag' , nargs=2)
+def dtag(dtag):
+    if dtag[0] == 'all':
+        split_idx = dtag[1].split(':')
+        response = ec2_client.describe_instances()
+        instances = response['Reservations']
+        instance_ids = []
+        for instance in instances:
+            instance_ids.append(instance['Instances'][0]['InstanceId'])
+            tage_creation = ec2_client.delete_tags(
+            Resources = instance_ids, 
+            Tags = [{'Key' : f'{split_idx[0]}', 'Value' : f'{split_idx[1]}',}])
+            print(f'Finished Instance Count : {len(instance_ids)}')
 
 
 
@@ -87,6 +114,7 @@ def main():
     cli.add_command(list)
     cli.add_command(change)
     cli.add_command(tag)
+    cli.add_command(dtag)
     cli()
 
 if __name__ == "__main__":
