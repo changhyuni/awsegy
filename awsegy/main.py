@@ -68,28 +68,28 @@ def change(change):
 @click.command(help='Tagging Instance!        ex)"awsegy tag all tag:Name"')
 @click.argument('tag' , nargs=2)
 def tag(tag):
+    split_idx = tag[1].split(':')
+    response = ec2_client.describe_instances()
+    instances = response['Reservations']
+    instance_ids = []
     if tag[0] == 'all':
-        split_idx = tag[1].split(':')
-        response = ec2_client.describe_instances()
-        instances = response['Reservations']
-        instance_ids = []
         for instance in instances:
             instance_ids.append(instance['Instances'][0]['InstanceId'])
             tage_creation = ec2_client.create_tags(
             Resources = instance_ids, 
             Tags = [{'Key' : f'{split_idx[0]}', 'Value' : f'{split_idx[1]}',}])
             print(f'Finished Instance Count : {len(instance_ids)}')
-    # else:
-    #     split_idx = tag[1].split(':')
-    #     response = ec2_client.describe_instances()
-    #     instances = response['Reservations']
-    #     instance_ids = []
-    #     for instance in instances:
-    #         instance_ids.append(instance['Instances'][0]['InstanceId'])
-    #         tage_creation = ec2_client.create_tags(
-    #         Resources = instance_ids, 
-    #         Tags = [{'Key' : f'{split_idx[0]}', 'Value' : f'{split_idx[1]}',}])
-    #         print(f'Finished Instance Count : {len(instance_ids)}')
+    else:
+        for instance in instances:
+            custom_filter = [{'Name':'tag:Name', 'Values': ['{}'.format(tag[0])]}]
+            response = ec2_client.describe_instances(Filters=custom_filter)
+            instance_ids.append(instance['Instances'][0]['InstanceId'])
+            tage_creation = ec2_client.create_tags(
+            Resources = instance_ids, 
+            Tags = [{'Key' : f'{split_idx[0]}', 'Value' : f'{split_idx[1]}',}])
+            print(f'Finished Instance Count : {len(instance_ids)}')
+            
+
         
         
         
