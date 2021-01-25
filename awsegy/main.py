@@ -3,12 +3,16 @@ import boto3
 import os
 import time
 import progressbar
+from datetime import datetime, timedelta, timezone
 
 
-### Boto3 Configure
+# Config(ec2.instnace)
 ec2_client = boto3.client('ec2', region_name = 'ap-northeast-2')
 
-### Component Option 
+# List(ec2.Snapshot)
+snapshots = ec2_client.snapshots.filter(OwnerIds=['self'])
+
+# Option(code.function)
 def Search(Search): 
     split_idx = Search.split(':')
     custom_filter = [{'Name':'tag:{}'.format(split_idx[0]), 'Values': ['{}'.format(split_idx[1])]}]
@@ -20,9 +24,8 @@ def ProgressBar(Number):
     for i in bar(range(Number)):
         time.sleep(0.1)
 
-##############################
-#### Main Commnad        #####
-##############################
+
+# Code(main)
 @click.group()
 def cli():
     '''
@@ -96,18 +99,37 @@ def tag(tag):
 @click.command(help='Untagging Instance!        ex)"awsegy dtag all tag:Name"')
 @click.argument('dtag' , nargs=2)
 def dtag(dtag):
+    split_idx = dtag[1].split(':')
+    response = ec2_client.describe_instances()
+    instances = response['Reservations']
+    instance_ids = []
     if dtag[0] == 'all':
-        split_idx = dtag[1].split(':')
-        response = ec2_client.describe_instances()
-        instances = response['Reservations']
-        instance_ids = []
         for instance in instances:
             instance_ids.append(instance['Instances'][0]['InstanceId'])
             tage_creation = ec2_client.delete_tags(
             Resources = instance_ids, 
             Tags = [{'Key' : f'{split_idx[0]}', 'Value' : f'{split_idx[1]}',}])
             print(f'Finished Instance Count : {len(instance_ids)}')
+    else:
+        for instance in instances:
+            custom_filter = [{'Name':'tag:Name', 'Values': ['{}'.format(dtag[0])]}]
+            response = ec2_client.describe_instances(Filters=custom_filter)
+            instance_ids.append(instance['Instances'][0]['InstanceId'])
+            tage_creation = ec2_client.delete_tags(
+            Resources = instance_ids, 
+            Tags = [{'Key' : f'{split_idx[0]}', 'Value' : f'{split_idx[1]}',}])
+            print(f'Finished Instance Count : {len(instance_ids)}')
 
+        
+@click.command(help='Remove old ebs-snapshots ex) "awsegy rsnap 0~255"')
+@click.argument('rsnap', type=int)
+def rsnap(rsnap):
+    for snapshot in snapshots:
+        start_time = snapshot.start_time
+        delete_time = datetime.now(tz=timezone.utc) - timedelta(days=rsnap)
+        if delete_time > start_time:
+            snapshot.delete()
+            print('Snapshot with Id = {} is deleted '.format(snapshot.snapshot_id))
 
 
 def main():
@@ -115,10 +137,13 @@ def main():
     cli.add_command(change)
     cli.add_command(tag)
     cli.add_command(dtag)
+    cli.add_command(rsnap)
     cli()
 
 if __name__ == "__main__":
     main()
+
+
 
 
 
