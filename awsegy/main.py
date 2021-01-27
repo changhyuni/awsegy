@@ -47,7 +47,7 @@ def list(list):
         print('Oops! There''s no such name.')
 
 
-@click.command(help='The instance type to change. ex) "awsegy change tag:Name Instance Type")')
+@click.command(help='The instance type to change. ex) "awsegy change tag:Name Instance Type"')
 @click.argument('change', nargs=2)
 def change(change):
     for instance in Search(change[0]):
@@ -130,6 +130,8 @@ def rsnap(rsnap):
         if delete_time > start_time:
             snapshot.delete()
             print('Snapshot with Id = {} is deleted '.format(snapshot.snapshot_id))
+
+
 
 
 def main():

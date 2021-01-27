@@ -12,7 +12,7 @@ install_requires = [
 
 setup(
     name='awsegy',
-    version='1.0.0',
+    version='0.1.4',
     author='loanshark',
     author_email='bhs9610@naver.com',
     description='Greet someone',
