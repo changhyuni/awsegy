@@ -4,13 +4,17 @@ import os
 import time
 import progressbar
 from datetime import datetime, timedelta, timezone
+from pyfiglet import Figlet
 
+# Hello awsegy
+f = Figlet(font='slant')
+print(f.renderText('awsegy'))
 
 # Config(ec2.instnace)
 ec2_client = boto3.client('ec2', region_name = 'ap-northeast-2')
 
 # List(ec2.Snapshot)
-snapshots = ec2_client.snapshots.filter(OwnerIds=['self'])
+# snapshots = ec2_client.snapshots.filter(OwnerIds=['self'])
 
 # Option(code.function)
 def Search(Search): 
@@ -29,7 +33,7 @@ def ProgressBar(Number):
 @click.group()
 def cli():
     '''
-    Interactive CLI tool awsegy \U0001f600
+    Interactive CLI tool 
     '''
     pass
 
@@ -57,7 +61,7 @@ def change(change):
         if instance['Instances'][0]['State']['Name'] == 'running':
             print(f'Instance Stop Processing : {ids}')
             ec2_client.stop_instances(InstanceIds=ids)
-            waiter=ec2_client.get_waiter('instance_stopped')
+            waiter  = ec2_client.get_waiter('instance_stopped')
             ProgressBar(300)
             ec2_client.modify_instance_attribute(InstanceId=id, Attribute='instanceType', Value=change[1])
             ec2_client.start_instances(InstanceIds=ids)
@@ -121,15 +125,15 @@ def dtag(dtag):
             print(f'Finished Instance Count : {len(instance_ids)}')
 
         
-@click.command(help='Remove old ebs-snapshots ex) "awsegy rsnap 0~255"')
-@click.argument('rsnap', type=int)
-def rsnap(rsnap):
-    for snapshot in snapshots:
-        start_time = snapshot.start_time
-        delete_time = datetime.now(tz=timezone.utc) - timedelta(days=rsnap)
-        if delete_time > start_time:
-            snapshot.delete()
-            print('Snapshot with Id = {} is deleted '.format(snapshot.snapshot_id))
+# @click.command(help='Remove old ebs-snapshots ex) "awsegy rsnap 0~255"')
+# @click.argument('rsnap', type=int)
+# def rsnap(rsnap):
+#     for snapshot in snapshots:
+#         start_time = snapshot.start_time
+#         delete_time = datetime.now(tz=timezone.utc) - timedelta(days=rsnap)
+#         if delete_time > start_time:
+#             snapshot.delete()
+#             print('Snapshot with Id = {} is deleted '.format(snapshot.snapshot_id))
 
 
 
@@ -139,7 +143,7 @@ def main():
     cli.add_command(change)
     cli.add_command(tag)
     cli.add_command(dtag)
-    cli.add_command(rsnap)
+    # cli.add_command(rsnap)
     cli()
 
 if __name__ == "__main__":

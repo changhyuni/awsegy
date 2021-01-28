@@ -8,6 +8,7 @@ install_requires = [
     'Click==7.0',
     'virtualenv==20.1.0',
     'progressbar==2.5',
+    'pyfiglet==0.8.post1',
     ]
 
 setup(
