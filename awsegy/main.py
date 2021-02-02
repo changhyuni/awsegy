@@ -33,7 +33,7 @@ def ProgressBar(Number):
 @click.group()
 def cli():
     '''
-    Interactive CLI tool 
+    Interactive CLI tool 0.1.4e
     '''
     pass
 
