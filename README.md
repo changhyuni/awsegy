@@ -7,6 +7,7 @@ From awsegy to aws infra to files to snapshots, everything is always at your fin
 ## Overview
 `awsegy` is interactive CLI tool that is related AWS and Python boto3
 It can select a ec2 server tags installed. 
+'python3 setup.py install' -> 'aws configure' 
 
 ### Option
 * list
