@@ -1,0 +1,9 @@
+README.md
+setup.py
+awsegy/__init__.py
+awsegy/main.py
+awsegy.egg-info/PKG-INFO
+awsegy.egg-info/SOURCES.txt
+awsegy.egg-info/dependency_links.txt
+awsegy.egg-info/entry_points.txt
+awsegy.egg-info/top_level.txt
